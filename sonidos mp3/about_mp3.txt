@@ -1,3 +1,0 @@
-mp3 filename must be lowercase and without spaces 
-
-is better reupload the file with new filename than edit its name

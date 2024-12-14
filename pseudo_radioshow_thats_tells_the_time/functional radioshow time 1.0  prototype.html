@@ -1,0 +1,186 @@
+<html lang="en"> 
+   <head> 
+ <meta charset="UTF-8"> 
+ <meta  
+ name="viewport"  
+ content="width=device-width, 
+          height=device-height,  
+          initial-scale=1.0"> 
+  
+     <title>functional radioshow</title> 
+     <style> 
+ *{margin:0px;padding:0px;} 
+     body{ 
+       background-color: rgb(0,0,0); 
+       color: lime; 
+ }  
+ h2{ 
+   animation:colores 7s 1s linear infinite; 
+ } 
+ @keyframes colores{ 
+   from{ 
+    filter: hue-rotate(0deg); 
+   }to{ 
+     filter: hue-rotate(360deg); 
+   } 
+ } 
+ #displaydata{ 
+ font-size:40px; 
+ height:50px;
+ border:2px solid cyan; 
+ color:lime; 
+ background-color:blue ; 
+ padding:30px; 
+  }  
+
+
+     </style> 
+   </head> 
+  
+   <body> 
+  
+     <h2>html5</h2> 
+ <div id="div1"></div> 
+ <div id="div2"></div> 
+ <div id="div3"></div> 
+  
+  
+ <marquee id="displaydata" behavior="scroll" ></marquee> 
+  
+ <script src="devicetime.js"></script>
+  
+ <script> 
+ let mainaudio = new Audio() 
+ let sounds = [] 
+ let already = []  
+ let last = null
+ let timeinterval = 1
+ let timeended 
+  
+ sounds[0] = { 
+   intro:['song1intro1.mp3','song1intro2.mp3', 
+          'song1intro3.mp3','song1intro4.mp3'], 
+   song:'firstsong1.mp3', 
+   text:'pais: firstcountry / interprete: first / cancion: song1' 
+ } 
+ sounds[1] = { 
+   intro:['song2intro1.mp3','song2intro2.mp3',
+          'song2intro3.mp3','song2intro4.mp3'], 
+   song:'secondsong2.mp3', 
+   text:'pais: secondcountry / interprete: second / cancion: song2' 
+ } 
+ sounds[2] = { 
+   intro:['song3intro1.mp3','song3intro2.mp3',
+          'song3intro3.mp3','song3intro4.mp3'], 
+   song:'thirdsong3.mp3', 
+   text:'pais: thirdcountry / interprete: third / cancion: song3' 
+ } 
+  
+ function random(array){ 
+   mainaudio.currentTime = 0 
+   mainaudio.pause() 
+   displaydata.innerHTML = ''  
+  
+  
+   if(already.length === sounds.length){ 
+     already = []  
+     already.push(last)
+   }  
+  
+   let luck    
+   do{ 
+       luck = parseInt(Math.random()*array.length) 
+   } while(already.includes(luck))  
+  
+   already.push(luck)  
+   last = luck
+  // div1.innerHTML = already.join('/') 
+  
+   //displaydata.innerHTML = array[luck].text 
+   updateMarqueeText(array[luck].text)  
+  
+   let introduce = function() {     
+     mainaudio.src = "sonidos mp3/" + array[luck].intro[parseInt(Math.random()*array[luck].intro.length)] 
+     mainaudio.play() 
+  
+     mainaudio.onended = function() { 
+       main()  
+      }  
+   } 
+   introduce() 
+   function main(){ 
+   mainaudio.src = "sonidos mp3/" +array[luck].song  
+   mainaudio.play()  
+   mainaudio.onended = function(){
+     telltime()
+   }
+   } 
+   function telltime(){
+    timeinterval--
+    document.body.innerHTML += timeinterval
+    
+    if(timeinterval > 0)random(sounds)
+    
+    if(timeinterval == 0){
+    time()
+    timeinterval = parseInt(Math.random()*4+3) 
+    }
+
+   } 
+ } 
+ 
+  
+ document.body.onclick = function(){ 
+   random(sounds) 
+ } 
+  
+//  document.body.onclick = time
+  
+  
+  
+  
+ function updateMarqueeText(newText) { 
+   const marquee = document.getElementById('displaydata'); 
+  
+   // Clone the marquee and update the content 
+   const newMarquee = marquee.cloneNode(true); 
+   newMarquee.innerHTML = newText; 
+  
+   // Replace the old marquee with the new one 
+   marquee.parentNode.replaceChild(newMarquee, marquee); 
+ } 
+  
+  
+  function time() {
+  let date = new Date();
+  let hour = date.getHours();
+  let minute = date.getMinutes();
+
+  tospeak = [
+    itstime[parseInt(Math.random()*itstime.length)], 
+    allhours[hour], 
+    allminutes[minute], 
+    repeat[parseInt(Math.random()*repeat.length)],
+    allhours[hour], 
+    allminutes[minute], 
+    backtoshow[parseInt(Math.random()*backtoshow.length)]
+    ];
+
+  playAudioSequence();
+}
+
+function playAudioSequence() {
+ // if (tospeak.length === 0) return;//original statement
+if (tospeak.length === 0) {
+  random(sounds);
+  return
+} 
+
+  mainaudio.src = "time sounds/" + tospeak.shift();
+  mainaudio.play();
+  mainaudio.onended = playAudioSequence;
+}
+ </script> 
+ <footer>         <!--              --> </footer> 
+ </body> 
+ </html> 

@@ -1,6 +1,7 @@
 -single audio object 
 
 -run in the background to manage that functionality 
-you should check visibilitychange event
+you should check visibilitychange event, 
+which is part of page visibility api. 
 
 -endless via recursion

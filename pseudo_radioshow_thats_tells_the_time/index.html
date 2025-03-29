@@ -116,9 +116,11 @@ sounds[3] = {
    updateMarqueeText(array[luck].text)  
   
    let introduce = function() {  
+
    
    //  mainaudio.src = "sonidos mp3/" + 
 mainaudio.src = array[luck].intro[parseInt(Math.random()*array[luck].intro.length)] 
+document.body.innerHTML += mainaudio.src
      mainaudio.play() 
   
      mainaudio.onended = function() { 

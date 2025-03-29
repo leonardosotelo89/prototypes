@@ -81,11 +81,7 @@ justify-content:center;
  } 
 
 
-sounds[3] = { 
-   intro:['https://leonardosotelo89.github.io/functional_radioshow_archive/despinavanditasterimou.mp3'], 
-   song:'https://github.com/leonardosotelo89/functional_radioshow_archive/releases/download/audios1/chiaradeczeinunddenselben.mp3', 
-   text:'&nbsp&nbsp&nbsp&#160&#160&#160 pais: germany / interprete: chiara decz / cancion: ein und den selben &nbsp&nbsp&nbsp&#160&#160&#160' 
- } 
+
 
 
 
@@ -117,10 +113,8 @@ sounds[3] = {
   
    let introduce = function() {  
 
-   
-   //  mainaudio.src = "sonidos mp3/" + 
-mainaudio.src = array[luck].intro[parseInt(Math.random()*array[luck].intro.length)] 
-document.body.innerHTML += mainaudio.src
+     mainaudio.src = "sonidos mp3/" +  array[luck].intro[parseInt(Math.random()*array[luck].intro.length)] 
+
      mainaudio.play() 
   
      mainaudio.onended = function() { 

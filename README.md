@@ -3,13 +3,16 @@
 >the index.html contain links to sub folders html files
 
 >[!tip]
->this is the tip
+>this is the tip<br>
+>
 
 >[!important]
->this is the important
+>this is the important<br>
+>
 
 >[!warning]
->this is the warning
+>this is the warning<br>
+>
 
 >[!caution]
 >this is the caution<br>

@@ -1,5 +1,6 @@
 >[!note]
->sub folders links must be named index.html
+>this is the note
+>the index.html contain links to sub folders html files
 
 >[!tip]
 >this is the tip
@@ -12,3 +13,4 @@
 
 >[!caution]
 >this is the caution
+>sub folders links urls must be lowercase and without spaces 

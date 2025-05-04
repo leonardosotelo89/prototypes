@@ -1,1 +1,2 @@
-sub folders links must be named index.html 
+>[!note]
+>sub folders links must be named index.html 

@@ -1,2 +1,4 @@
 >[!note]
->sub folders links must be named index.html 
+>sub folders links must be named index.html
+>[!caution]
+>this is the caution

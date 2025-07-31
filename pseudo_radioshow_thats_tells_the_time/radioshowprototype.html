@@ -61,7 +61,19 @@ justify-content:center;
  let last = null
  let timeinterval = 1
 
-    sounds[...songs1]
+    sounds = [...songs1]
+    /*
+Asumiendo que songs1 es un array de objetos 
+(como los comentados más arriba), 
+y quieres copiar todos sus elementos a sounds, 
+puedes hacer:
+
+sounds = [...songs1];
+
+O si quieres agregar sus elementos a sounds sin reemplazarlo:
+
+sounds.push(...songs1);
+    */
  
   /*
  sounds[0] = { 

@@ -50,6 +50,9 @@ justify-content:center;
   
   
  <marquee id="displaydata" behavior="scroll" ></marquee> 
+
+<div id="sources" ></div>
+      
   
  <script src="devicetime.js"></script> 
  <script src="list1.js"></script>
@@ -135,6 +138,7 @@ mainaudio.src = "https://leonardosotelo89.github.io/functional_radioshow_archive
 
        } 
      mainaudio.play() 
+      sources.innerHTML += mainaudio.src +"<br>" 
   
      mainaudio.onended = function() { 
        main()  
@@ -147,6 +151,8 @@ mainaudio.src = "https://leonardosotelo89.github.io/functional_radioshow_archive
    mainaudio.src = "https://leonardosotelo89.github.io/functional_radioshow_archive_2/songs200to299/" + array[luck].song
    }
    mainaudio.play()  
+    sources.innerHTML += mainaudio.src +"<br>"
+
    mainaudio.onended = function(){
      telltime()
    }

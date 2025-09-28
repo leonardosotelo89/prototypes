@@ -1,0 +1,80 @@
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Test Radioshow Visual</title>
+<style>
+  body {
+    background-color: rgb(0,50,50);
+    color: lime;
+    font-family: monospace;
+  }
+  .summary {
+    margin-bottom: 15px;
+  }
+  .card {
+    padding: 5px 10px;
+    margin: 2px 0;
+    border-radius: 5px;
+    display: block;
+    word-break: break-all; /* para que las rutas largas se ajusten */
+  }
+  .success {
+    background-color: green;
+    color: white;
+  }
+  .error {
+    background-color: red;
+    color: white;
+  }
+</style>
+</head>
+<body>
+<h1>Test tool for radioshow</h1>
+
+<div class="summary" id="summary">Cargando archivos...</div>
+<div id="results"></div>
+
+<script src="https://leonardosotelo89.github.io/functional_radioshow/list200to299.js"></script> 
+<script>
+let totalIntros = 0;
+let totalSongs = 0;
+let totalPassed = 0;
+let totalFailed = 0;
+
+const resultsDiv = document.getElementById('results');
+const summaryDiv = document.getElementById('summary');
+
+function createCard(url, success) {
+  const div = document.createElement('div');
+  div.className = 'card ' + (success ? 'success' : 'error');
+  div.textContent = (success ? '✅ ' : '❌ ') + url;
+  resultsDiv.appendChild(div);
+  
+  if(success) totalPassed++; else totalFailed++;
+  summaryDiv.textContent = `Total intros: ${totalIntros}, Total songs: ${totalSongs}, ✅ Pasaron: ${totalPassed}, ❌ Fallaron: ${totalFailed}`;
+}
+
+function testUrls(list) {
+  list.forEach(item => {
+    // Intros
+    item.intro.forEach(file => {
+      const url = "https://leonardosotelo89.github.io/functional_radioshow_archive2/intros200to249/" + file;
+      let audio = new Audio(url);
+      audio.oncanplaythrough = () => createCard(url, true);
+      audio.onerror = () => createCard(url, false);
+      totalIntros++;
+    });
+    
+    // Song
+    const songUrl = "https://leonardosotelo89.github.io/functional_radioshow_archive2/songs200to299/" + item.song;
+    let audioSong = new Audio(songUrl);
+    audioSong.oncanplaythrough = () => createCard(songUrl, true);
+    audioSong.onerror = () => createCard(songUrl, false);
+    totalSongs++;
+  });
+}
+
+testUrls(list3);
+</script>
+</body>
+</html>

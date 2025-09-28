@@ -133,7 +133,7 @@ sounds.push(...songs1);
    let introduce = function() {  
 
      mainaudio.src = "sonidos mp3/" +  array[luck].intro[parseInt(Math.random()*array[luck].intro.length)] 
-     if(array[luck] >= 3){
+     if(luck >= 3){
 mainaudio.src = "https://leonardosotelo89.github.io/functional_radioshow_archive_2/intros200to249/" +  array[luck].intro[parseInt(Math.random()*array[luck].intro.length)] 
 
        } 
@@ -147,7 +147,7 @@ mainaudio.src = "https://leonardosotelo89.github.io/functional_radioshow_archive
    introduce() 
    function main(){ 
    mainaudio.src = "sonidos mp3/" +array[luck].song  
-   if(array[luck] >= 3){
+   if(luck >= 3){
    mainaudio.src = "https://leonardosotelo89.github.io/functional_radioshow_archive_2/songs200to299/" + array[luck].song
    }
    mainaudio.play()  

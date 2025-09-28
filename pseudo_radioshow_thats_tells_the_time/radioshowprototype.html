@@ -53,6 +53,8 @@ justify-content:center;
   
  <script src="devicetime.js"></script> 
  <script src="list1.js"></script>
+ <script src="https://leonardosotelo89.github.io/functional_radioshow/list200to299.js" >
+ </script>
   
  <script> 
  let mainaudio = new Audio() 
@@ -61,7 +63,7 @@ justify-content:center;
  let last = null
  let timeinterval = 1
 
-    sounds = [...songs1]
+    sounds = [...songs1,...list3]
     /*
 Asumiendo que songs1 es un array de objetos y 
 quieres copiar todos sus elementos a sounds, 
@@ -128,7 +130,10 @@ sounds.push(...songs1);
    let introduce = function() {  
 
      mainaudio.src = "sonidos mp3/" +  array[luck].intro[parseInt(Math.random()*array[luck].intro.length)] 
+     if(array[luck] >= 3){
+mainaudio.src = "https://leonardosotelo89.github.io/functional_radioshow_archive_2/intros200to249/" +  array[luck].intro[parseInt(Math.random()*array[luck].intro.length)] 
 
+       } 
      mainaudio.play() 
   
      mainaudio.onended = function() { 
@@ -138,6 +143,9 @@ sounds.push(...songs1);
    introduce() 
    function main(){ 
    mainaudio.src = "sonidos mp3/" +array[luck].song  
+   if(array[luck] >= 3){
+   mainaudio.src = "https://leonardosotelo89.github.io/functional_radioshow_archive_2/songs200to299/" + array[luck].song
+   }
    mainaudio.play()  
    mainaudio.onended = function(){
      telltime()

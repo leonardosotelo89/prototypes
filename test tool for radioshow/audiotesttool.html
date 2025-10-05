@@ -48,17 +48,29 @@ function createCard(url, success) {
   const div = document.createElement('div');
   div.className = 'card ' + (success ? 'success' : 'error');
   div.textContent = (success ? '✅ ' : '❌ ') + url;
-  resultsDiv.appendChild(div);
+  div.addEventListener("click",()=>{
+     mainaudio.src = url 
+     mainaudio.play()
+     console.log(url) 
+   })
+   resultsDiv.appendChild(div); 
   
-  if(success) totalPassed++; else totalFailed++;
-  summaryDiv.textContent = `Total intros: ${totalIntros}, Total songs: ${totalSongs}, ✅ Pasaron: ${totalPassed}, ❌ Fallaron: ${totalFailed}`;
-}
-
-function testUrls(list) {
-  list.forEach(item => {
-    // Intros
-    item.intro.forEach(file => {
-      const url = "https://leonardosotelo89.github.io/functional_radioshow_archive2/intros200to249/" + file;
+   if(success) totalPassed++; else totalFailed++; 
+   summaryDiv.textContent = `Total intros: ${totalIntros}, Total songs: ${totalSongs}, ✅ Pasaron: ${totalPassed}, ❌ Fallaron: ${totalFailed}`; 
+ } 
+  
+ function testUrls(list) { 
+   list.forEach((item, index) => { 
+     // Intros 
+     let path 
+     if(index < 50) {
+       path =  "https://leonardosotelo89.github.io/functional_radioshow_archive2/intros200to249/"
+     } else{
+        "https://leonardosotelo89.github.io/functional_radioshow_archive2/intros250to299/"
+     }
+     
+     item.intro.forEach(file => { 
+       const url = path + file; 
       let audio = new Audio(url);
       audio.oncanplaythrough = () => createCard(url, true);
       audio.onerror = () => createCard(url, false);

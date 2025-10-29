@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"><title>Transmisor</title></head>
+<body>
+<h2>Transmisor de pantalla</h2>
+<button id="startBtn">Iniciar transmisión</button>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
+import { getDatabase, ref, push, set, onChildAdded, remove } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyB-g5vDBoRBBXRA4sHSSUoSb1mOAzW7dvE",
+  authDomain: "screenshare-c9b90.firebaseapp.com",
+  databaseURL: "https://screenshare-c9b90-default-rtdb.firebaseio.com",
+  projectId: "screenshare-c9b90",
+  storageBucket: "screenshare-c9b90.firebasestorage.app",
+  messagingSenderId: "773043733347",
+  appId: "1:773043733347:web:91aa0217bcf05a11990956",
+};
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+document.getElementById("startBtn").onclick = async () => {
+  const stream = await navigator.mediaDevices.getDisplayMedia({ video: true, audio: false });
+  const viewersRef = ref(db, "webrtc/viewers");
+
+  // Limpia conexiones previas
+  remove(viewersRef);
+
+  // Cada nuevo viewer crea su nodo con una oferta vacía
+  onChildAdded(viewersRef, async (snap) => {
+    const viewerId = snap.key;
+    const pc = new RTCPeerConnection();
+    stream.getTracks().forEach(track => pc.addTrack(track, stream));
+
+    // Envia ICE al viewer
+    pc.onicecandidate = (e) => {
+      if (e.candidate) {
+        set(ref(db, `webrtc/viewers/${viewerId}/senderCandidate`), e.candidate.toJSON());
+      }
+    };
+
+    const offer = await pc.createOffer();
+    await pc.setLocalDescription(offer);
+
+    // Guarda la oferta en Firebase
+    set(ref(db, `webrtc/viewers/${viewerId}/offer`), offer);
+
+    // Espera la respuesta del viewer
+    onChildAdded(ref(db, `webrtc/viewers/${viewerId}/answer`), async (answerSnap) => {
+      await pc.setRemoteDescription(answerSnap.val());
+    });
+  });
+};
+</script>
+</body>
+</html>

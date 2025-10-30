@@ -13,7 +13,6 @@
   .logEntry{background:var(--log-bg);color:var(--text);padding:8px 12px;border-radius:6px;display:flex;align-items:flex-start;gap:8px;max-width:95%;margin-left:8px}
   .logMsg{flex:1;white-space:pre-wrap}
   .logClose{font-weight:700;background:transparent;border:none;color:#ff7777;font-size:18px;cursor:pointer;padding:0 8px}
-  .bigX{font-size:22px;color:#ff4444;margin-left:8px}
   button{padding:8px 12px;font-size:16px}
   .status{padding:8px 12px}
 </style>
@@ -30,7 +29,7 @@
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
-import { getDatabase, ref, push, set, onChildAdded, onValue, remove } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-database.js";
+import { getDatabase, ref, push, set, onChildAdded, onValue } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-database.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyB-g5vDBoRBBXRA4sHSSUoSb1mOAzW7dvE",
@@ -43,8 +42,8 @@ const firebaseConfig = {
 };
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
-
 const sessionBase = 'webrtc/session1/viewers';
+
 const startBtn = document.getElementById('startBtn');
 const statusEl = document.getElementById('status');
 const localPreview = document.getElementById('localPreview');
@@ -68,81 +67,84 @@ function log(msg){
   logArea.prepend(entry);
 }
 
+function setStatus(t){ statusEl.innerText = t; }
+
 let localStream = null;
 
 startBtn.onclick = async () => {
-  try{
-    setStatus('Obteniendo pantalla...');
+  try {
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getDisplayMedia) {
+      log("getDisplayMedia no soportado, intentando usar cámara como fallback.");
+      localStream = await navigator.mediaDevices.getUserMedia({video:true,audio:false});
+      localPreview.srcObject = localStream;
+      setStatus("Transmitiendo cámara (sin soporte de screen share)");
+      listenForViewers();
+      return;
+    }
+    log("Esperando permiso del usuario para compartir pantalla...");
+    setStatus("Esperando permiso...");
     localStream = await navigator.mediaDevices.getDisplayMedia({video:true,audio:false});
+    if (!localStream) {
+      log("El usuario canceló la captura o no se obtuvo stream.");
+      setStatus("Cancelado");
+      return;
+    }
     localPreview.srcObject = localStream;
-    log('Captura de pantalla iniciada');
-    setStatus('Escuchando viewers...');
-    // start listening for viewers
+    log("Permiso concedido, pantalla capturada.");
+    setStatus("Transmitiendo pantalla");
     listenForViewers();
-  }catch(err){
-    log('Error al obtener pantalla: ' + (err && err.message ? err.message : err));
-    setStatus('Error');
+  } catch(err) {
+    log("Error al obtener pantalla: " + (err && err.message ? err.message : err));
+    setStatus("Error");
   }
 };
 
-function setStatus(t){ statusEl.innerText = t; }
-
 function listenForViewers(){
-  // don't remove whole viewers node. just listen for child_added.
   const viewersRef = ref(db, sessionBase);
   onChildAdded(viewersRef, async (snap) => {
     const viewerId = snap.key;
-    log('Nuevo viewer detectado: ' + viewerId);
-    const viewerPath = sessionBase + '/' + viewerId;
-    // create a peer connection per viewer
+    log("Nuevo viewer detectado: " + viewerId);
+    const viewerPath = sessionBase + "/" + viewerId;
     const pc = new RTCPeerConnection();
-    // add tracks
-    if(localStream) localStream.getTracks().forEach(t => pc.addTrack(t, localStream));
-    else log('Advertencia: no hay stream local aun.');
+    localStream.getTracks().forEach(t => pc.addTrack(t, localStream));
 
-    // when transmitter gets ICE candidates, push them to database under senderCandidates
     pc.onicecandidate = (e) => {
-      if(e.candidate){
-        const cRef = push(ref(db, viewerPath + '/senderCandidates'));
+      if (e.candidate) {
+        const cRef = push(ref(db, viewerPath + "/senderCandidates"));
         set(cRef, e.candidate.toJSON());
-        log('Transmitter: enviado candidate -> ' + JSON.stringify(e.candidate.toJSON()));
+        log("Transmitter: enviado candidate");
       }
     };
 
-    // listen for viewer's candidates
-    const viewerCandidatesRef = ref(db, viewerPath + '/viewerCandidates');
+    const viewerCandidatesRef = ref(db, viewerPath + "/viewerCandidates");
     onChildAdded(viewerCandidatesRef, async (snapC) => {
       const cand = snapC.val();
-      try{
+      try {
         await pc.addIceCandidate(cand);
-        log('Transmitter: agregado viewer candidate -> ' + JSON.stringify(cand));
-      }catch(e){
-        log('Transmitter: fallo addIceCandidate ' + (e.message||e));
+        log("Transmitter: agregado viewer candidate");
+      } catch(e) {
+        log("Error ICE viewer: " + (e.message||e));
       }
     });
 
-    // create offer
     const offer = await pc.createOffer();
     await pc.setLocalDescription(offer);
-    // write offer to viewer node
-    set(ref(db, viewerPath + '/offer'), offer);
-    log('Transmitter: oferta creada y guardada para ' + viewerId);
+    set(ref(db, viewerPath + "/offer"), offer);
+    log("Transmitter: oferta creada");
 
-    // wait for answer
-    onValue(ref(db, viewerPath + '/answer'), async (snapA) => {
-      if(!snapA.exists()) return;
+    onValue(ref(db, viewerPath + "/answer"), async (snapA) => {
+      if (!snapA.exists()) return;
       const answer = snapA.val();
-      try{
+      try {
         await pc.setRemoteDescription(answer);
-        log('Transmitter: respuesta recibida y aplicada para ' + viewerId);
-        setStatus('Transmitiendo a ' + viewerId);
-      }catch(e){
-        log('Transmitter: fallo setRemoteDescription ' + (e.message||e));
+        log("Transmitter: respuesta recibida");
+        setStatus("Transmitiendo a " + viewerId);
+      } catch(e) {
+        log("Error respuesta: " + (e.message||e));
       }
     });
-
   });
-  log('Listener activo sobre ' + sessionBase);
+  log("Esperando viewers...");
 }
 </script>
 </body>

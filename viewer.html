@@ -14,7 +14,7 @@ video { width:100%; max-height:80vh; background:black; }
 <button id="join">Unirse a la sesión</button>
 <video id="remote" autoplay playsinline controls></video>
 <script>
-const ws = new WebSocket("wss://TU_SERVIDOR.onrender.com");
+const ws = new WebSocket("wss://prototypes-le04.onrender.comm");
 const localId = "viewer-" + Math.random().toString(36).slice(2,9);
 let peer, senderId;
 

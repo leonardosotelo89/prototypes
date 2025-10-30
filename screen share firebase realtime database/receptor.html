@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Receptor</title>
+<style>
+  :root{--bg:rgb(0,50,50);--log-bg:rgba(0,0,0,0.6);--text:#7CFC00}
+  html,body{height:100%;margin:0;background:var(--bg);color:var(--text);font-family:monospace}
+  h2{padding:12px 16px;margin:0}
+  video{width:100%;display:block;background:#000}
+  #controls{padding:12px 16px}
+  #logArea{position:fixed;left:0;right:0;bottom:0;pointer-events:auto;padding:8px;display:flex;flex-direction:column-reverse;gap:8px;z-index:9999}
+  .logEntry{background:var(--log-bg);color:var(--text);padding:8px 12px;border-radius:6px;display:flex;align-items:flex-start;gap:8px;max-width:95%;margin-left:8px}
+  .logMsg{flex:1;white-space:pre-wrap}
+  .logClose{font-weight:700;background:transparent;border:none;color:#ff7777;font-size:18px;cursor:pointer;padding:0 8px}
+  button{padding:8px 12px;font-size:16px}
+  .status{padding:8px 12px}
+</style>
+</head>
+<body>
+<h2>Receptor</h2>
+<div id="controls">
+  <button id="joinBtn">Unirse a la sesión</button>
+  <span id="status" class="status">Idle</span>
+</div>
+<video id="remoteVideo" autoplay playsinline controls></video>
+
+<div id="logArea" aria-live="polite"></div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
+import { getDatabase, ref, push, set, onValue, onChildAdded } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyB-g5vDBoRBBXRA4sHSSUoSb1mOAzW7dvE",
+  authDomain: "screenshare-c9b90.firebaseapp.com",
+  databaseURL: "https://screenshare-c9b90-default-rtdb.firebaseio.com",
+  projectId: "screenshare-c9b90",
+  storageBucket: "screenshare-c9b90.firebasestorage.app",
+  messagingSenderId: "773043733347",
+  appId: "1:773043733347:web:91aa0217bcf05a11990956",
+};
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+const sessionBase = 'webrtc/session1/viewers';
+const joinBtn = document.getElementById('joinBtn');
+const statusEl = document.getElementById('status');
+const remoteVideo = document.getElementById('remoteVideo');
+const logArea = document.getElementById('logArea');
+
+function log(msg){
+  const id = Date.now().toString(36) + Math.random().toString(36).slice(2,8);
+  const entry = document.createElement('div');
+  entry.className = 'logEntry';
+  entry.id = 'log-'+id;
+  const m = document.createElement('div');
+  m.className = 'logMsg';
+  m.innerText = msg;
+  const btn = document.createElement('button');
+  btn.className = 'logClose';
+  btn.innerText = '✕';
+  btn.title = 'Cerrar';
+  btn.onclick = ()=> entry.remove();
+  entry.appendChild(m);
+  entry.appendChild(btn);
+  logArea.prepend(entry);
+}
+
+function setStatus(t){ statusEl.innerText = t; }
+
+let pc = null;
+let viewerRef = null;
+let viewerId = null;
+
+joinBtn.onclick = async () => {
+  setStatus('Creando viewer en DB...');
+  // create a viewer node
+  viewerRef = push(ref(db, sessionBase));
+  viewerId = viewerRef.key;
+  // init node so transmitter can detect it
+  set(ref(db, sessionBase + '/' + viewerId), { created: Date.now() });
+  log('Viewer creado: ' + viewerId);
+  setStatus('Esperando oferta...');
+  await handleOfferAnswerFlow();
+};
+
+async function handleOfferAnswerFlow(){
+  pc = new RTCPeerConnection();
+
+  pc.ontrack = (e) => {
+    remoteVideo.srcObject = e.streams[0];
+    log('Receptor: stream remoto asignado al video');
+    setStatus('Recibiendo');
+  };
+
+  pc.onicecandidate = (e) => {
+    if(e.candidate){
+      const cRef = push(ref(db, sessionBase + '/' + viewerId + '/viewerCandidates'));
+      set(cRef, e.candidate.toJSON());
+      log('Viewer: enviado candidate -> ' + JSON.stringify(e.candidate.toJSON()));
+    }
+  };
+
+  // listen for offer
+  onValue(ref(db, sessionBase + '/' + viewerId + '/offer'), async (snap) => {
+    if(!snap.exists()) return;
+    const offer = snap.val();
+    try{
+      await pc.setRemoteDescription(offer);
+      log('Viewer: oferta recibida y aplicada');
+      const answer = await pc.createAnswer();
+      await pc.setLocalDescription(answer);
+      set(ref(db, sessionBase + '/' + viewerId + '/answer'), answer);
+      log('Viewer: respuesta creada y guardada');
+    }catch(e){
+      log('Viewer: fallo handling offer: ' + (e.message||e));
+    }
+  });
+
+  // listen for sender candidates
+  onChildAdded(ref(db, sessionBase + '/' + viewerId + '/senderCandidates'), async (snapC) => {
+    const cand = snapC.val();
+    try{
+      await pc.addIceCandidate(cand);
+      log('Viewer: agregado sender candidate -> ' + JSON.stringify(cand));
+    }catch(e){
+      log('Viewer: fallo addIceCandidate ' + (e.message||e));
+    }
+  });
+
+  setStatus('Listo - esperando oferta');
+}
+</script>
+</body>
+</html>

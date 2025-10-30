@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Sender</title>
+<style>
+body { background: #001; color: lime; font-family: monospace; }
+button { margin: 10px; padding: 8px 14px; }
+video { width: 100%; max-height: 70vh; background: black; }
+</style>
+</head>
+<body>
+<h2>Transmisor</h2>
+<button id="start">Compartir pantalla</button>
+<video id="preview" autoplay playsinline></video>
+<script>
+const ws = new WebSocket("wss://TU_SERVIDOR.onrender.com");
+const localId = "sender-" + Math.random().toString(36).slice(2,9);
+let peer, stream, viewerId;
+
+ws.onopen = () => ws.send(JSON.stringify({type:"hello", id: localId}));
+
+async function start(){
+  stream = await navigator.mediaDevices.getDisplayMedia({video:true, audio:false});
+  document.querySelector("#preview").srcObject = stream;
+  peer = new RTCPeerConnection();
+  stream.getTracks().forEach(t=>peer.addTrack(t, stream));
+
+  peer.onicecandidate = e=>{
+    if(e.candidate) send({type:"candidate", to:viewerId, from:localId, payload:e.candidate});
+  };
+
+  const offer = await peer.createOffer();
+  await peer.setLocalDescription(offer);
+  send({type:"offer", from:localId, payload:offer});
+}
+
+ws.onmessage = async ({data})=>{
+  const msg = JSON.parse(data);
+  if(msg.type==="hello" && msg.id.startsWith("viewer-")) {
+    viewerId = msg.id;
+    console.log("viewer conectado:", viewerId);
+  }
+  if(msg.type==="answer" && msg.from===viewerId) {
+    await peer.setRemoteDescription(msg.payload);
+  }
+  if(msg.type==="candidate" && msg.from===viewerId && msg.payload) {
+    await peer.addIceCandidate(msg.payload);
+  }
+};
+
+function send(obj){ ws.send(JSON.stringify(obj)); }
+
+document.querySelector("#start").onclick=start;
+</script>
+</body>
+</html>

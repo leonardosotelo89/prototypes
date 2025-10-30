@@ -103,20 +103,26 @@ async function handleOfferAnswerFlow(){
   };
 
   // listen for offer
-  onValue(ref(db, sessionBase + '/' + viewerId + '/offer'), async (snap) => {
-    if(!snap.exists()) return;
-    const offer = snap.val();
-    try{
-      await pc.setRemoteDescription(offer);
-      log('Viewer: oferta recibida y aplicada');
-      const answer = await pc.createAnswer();
-      await pc.setLocalDescription(answer);
-      set(ref(db, sessionBase + '/' + viewerId + '/answer'), answer);
-      log('Viewer: respuesta creada y guardada');
-    }catch(e){
-      log('Viewer: fallo handling offer: ' + (e.message||e));
+  let offerHandled = false;
+onValue(ref(db, sessionBase + '/' + viewerId + '/offer'), async (snap) => {
+  if (!snap.exists() || offerHandled) return;
+  offerHandled = true;
+  const offer = snap.val();
+  try {
+    if (pc.signalingState === "stable") {
+      log("Viewer: ignorando oferta duplicada en estado estable");
+      return;
     }
-  });
+    await pc.setRemoteDescription(offer);
+    log("Viewer: oferta recibida y aplicada");
+    const answer = await pc.createAnswer();
+    await pc.setLocalDescription(answer);
+    await set(ref(db, sessionBase + '/' + viewerId + '/answer'), answer);
+    log("Viewer: respuesta creada y guardada");
+  } catch(e) {
+    log("Viewer: fallo handling offer: " + (e.message || e));
+  }
+});
 
   // listen for sender candidates
   onChildAdded(ref(db, sessionBase + '/' + viewerId + '/senderCandidates'), async (snapC) => {

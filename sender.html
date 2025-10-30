@@ -14,7 +14,7 @@ video { width: 100%; max-height: 70vh; background: black; }
 <button id="start">Compartir pantalla</button>
 <video id="preview" autoplay playsinline></video>
 <script>
-const ws = new WebSocket("wss://TU_SERVIDOR.onrender.com");
+const ws = new WebSocket("wss://prototypes-le04.onrender.com");
 const localId = "sender-" + Math.random().toString(36).slice(2,9);
 let peer, stream, viewerId;
 

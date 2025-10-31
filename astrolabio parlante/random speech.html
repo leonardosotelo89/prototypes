@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Astrolabio Parlante — Protobot</title>
+<style>
+  :root{
+    --bg:#071024; --gold:#d4af37; --plate:#2a2f36; --accent:#8fd3ff;
+    --glass: rgba(255,255,255,0.06);
+  }
+  html,body{height:100%;margin:0;font-family:Inter,Segoe UI,Arial;}
+  body{background:linear-gradient(180deg,#031022 0%, #0b1a2b 100%);display:flex;align-items:center;justify-content:center;color:#ddd}
+  .stage{width:880px;max-width:96%;padding:28px;border-radius:16px;background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent);box-shadow:0 10px 40px rgba(0,0,0,0.6);display:grid;grid-template-columns:420px 1fr;gap:20px}
+  .panel{background:var(--plate);border-radius:12px;padding:18px;box-shadow:inset 0 1px 0 rgba(255,255,255,0.02)}
+  /* Astrolabio */
+  .astrolabe{width:100%;height:420px;display:flex;align-items:center;justify-content:center;position:relative}
+  svg{max-width:100%;height:auto;filter:drop-shadow(0 8px 20px rgba(0,0,0,0.6))}
+  .needle{transform-origin:50% 50%;transition:transform .6s cubic-bezier(.2,.9,.2,1)}
+  .eye{transition:transform .12s linear}
+  /* Controls */
+  .controls{display:flex;flex-direction:column;gap:10px}
+  .btn{background:var(--gold);color:#111;padding:10px 12px;border-radius:10px;border:none;cursor:pointer;font-weight:700;box-shadow:0 4px 12px rgba(212,175,55,0.18)}
+  .btn.secondary{background:transparent;color:var(--gold);border:1px solid rgba(212,175,55,0.12)}
+  .log{height:200px;overflow:auto;background:rgba(0,0,0,0.25);padding:10px;border-radius:8px;font-size:13px;color:var(--accent)}
+  .row{display:flex;gap:8px}
+  label{font-size:13px;color:#9fbfdc}
+  input[type="range"]{width:100%}
+  textarea{width:100%;height:100px;background:var(--glass);color:#fff;border:1px solid rgba(255,255,255,0.03);padding:8px;border-radius:8px}
+  footer{font-size:12px;color:#7aaed7;margin-top:8px}
+</style>
+</head>
+<body>
+  <div class="stage" role="application" aria-label="Astrolabio parlante">
+    <div class="panel astrolabe" aria-hidden="false">
+      <!-- SVG de astrolabio simplificado -->
+      <svg id="svgAstro" viewBox="0 0 500 500" role="img" aria-label="Astrolabio">
+        <defs>
+          <radialGradient id="rim" cx="50%" cy="40%">
+            <stop offset="0%" stop-color="#fff" stop-opacity="0.06"/>
+            <stop offset="100%" stop-color="#000" stop-opacity="0.6"/>
+          </radialGradient>
+        </defs>
+
+        <!-- Outer rim -->
+        <circle cx="250" cy="250" r="200" fill="url(#rim)"/>
+        <circle cx="250" cy="250" r="188" fill="#0b1a2b" stroke="#0f2430" stroke-width="6"/>
+
+        <!-- Decorative rings -->
+        <circle cx="250" cy="250" r="150" fill="none" stroke="#1e2a33" stroke-width="8"/>
+        <circle cx="250" cy="250" r="110" fill="none" stroke="#111821" stroke-width="6"/>
+
+        <!-- Eyes / display -->
+        <g id="face" transform="translate(0,10)">
+          <ellipse id="eyeLeft" class="eye" cx="200" cy="220" rx="18" ry="14" fill="#fff"/>
+          <ellipse id="eyeRight" class="eye" cx="300" cy="220" rx="18" ry="14" fill="#fff"/>
+          <circle id="pupilL" cx="200" cy="220" r="6" fill="#061322"/>
+          <circle id="pupilR" cx="300" cy="220" r="6" fill="#061322"/>
+          <rect x="170" y="250" width="160" height="26" rx="6" fill="#071a25" stroke="#103242"/>
+        </g>
+
+        <!-- Needle / pointer -->
+        <g id="pointer" class="needle">
+          <rect x="246" y="60" width="8" height="150" rx="4" fill="#c7a73f" />
+          <circle cx="250" cy="230" r="16" fill="#d6bb4a" stroke="#2b2b2b"/>
+        </g>
+
+        <!-- Mouth text -->
+        <text id="speechText" x="250" y="320" text-anchor="middle" font-size="18" fill="#b6e6ff" font-family="sans-serif"></text>
+      </svg>
+    </div>
+
+    <div class="panel controls" aria-live="polite">
+      <div class="row">
+        <button class="btn" id="speakBtn">Haz que hable</button>
+        <button class="btn secondary" id="randomBtn">Frase aleatoria</button>
+      </div>
+
+      <div style="margin-top:8px">
+        <label for="voiceSelect">Voz</label>
+        <select id="voiceSelect" style="width:100%;padding:8px;border-radius:8px;background:transparent;color:#fff"></select>
+      </div>
+
+      <div style="margin-top:8px">
+        <label for="rate">Velocidad</label>
+        <input id="rate" type="range" min="0.5" max="2" step="0.1" value="1"/>
+      </div>
+
+      <div style="margin-top:8px">
+        <label for="phrases">Frases personalizadas</label>
+        <textarea id="phrases" placeholder="Una frase por línea">El destino está en tus manos.
+No confíes en las predicciones de lunes.
+Hoy hay buenas noticias. O al menos eso dice el astrolabio.</textarea>
+      </div>
+
+      <div style="margin-top:10px">
+        <div class="row">
+          <button class="btn" id="logClear">Limpiar log</button>
+          <button class="btn secondary" id="animateBtn">Girar aguja</button>
+        </div>
+      </div>
+
+      <div style="margin-top:12px">
+        <label>Registro</label>
+        <div class="log" id="log"></div>
+      </div>
+
+      <footer>Prototipo mínimo. Web Speech API para TTS. Funciona en Chrome/Edge/Firefox (limitado).</footer>
+    </div>
+  </div>
+
+<script>
+  // --- Utilidades y estado ---
+  const speakBtn = document.getElementById('speakBtn');
+  const randomBtn = document.getElementById('randomBtn');
+  const animateBtn = document.getElementById('animateBtn');
+  const logEl = document.getElementById('log');
+  const phrasesEl = document.getElementById('phrases');
+  const voiceSelect = document.getElementById('voiceSelect');
+  const rate = document.getElementById('rate');
+  const svg = document.getElementById('svgAstro');
+  const pointer = document.getElementById('pointer');
+  const eyeL = document.getElementById('pupilL');
+  const eyeR = document.getElementById('pupilR');
+  const speechText = document.getElementById('speechText');
+
+  function log(s){
+    const p = document.createElement('div');
+    p.textContent = '[' + new Date().toLocaleTimeString() + '] ' + s;
+    logEl.prepend(p);
+  }
+
+  // --- Frases ---
+  function getPhrases(){
+    return phrasesEl.value.split('\n').map(s=>s.trim()).filter(Boolean);
+  }
+
+  // --- Web Speech API ---
+  let synth = window.speechSynthesis;
+  let voices = [];
+
+  function populateVoices(){
+    voices = synth.getVoices().filter(v => v.lang.startsWith('es') || true);
+    voiceSelect.innerHTML = voices.map((v,i)=>`<option value="${i}">${v.name} (${v.lang})</option>`).join('');
+  }
+  populateVoices();
+  if (speechSynthesis.onvoiceschanged !== undefined) {
+    speechSynthesis.onvoiceschanged = populateVoices;
+  }
+
+  function speak(text){
+    if(!('speechSynthesis' in window)){ log('TTS no soportado'); return; }
+    const utter = new SpeechSynthesisUtterance(text);
+    const v = voices[voiceSelect.value] || null;
+    if(v) utter.voice = v;
+    utter.rate = parseFloat(rate.value);
+    utter.onstart = ()=> log('Hablando: ' + text);
+    utter.onend = ()=> {
+      log('Fin habla');
+      resetEyes();
+      speechText.textContent = '';
+    };
+    utter.onerror = (e)=>{ log('Error TTS: ' + e.error); resetEyes(); };
+    moveEyesWhileSpeaking();
+    speechText.textContent = text;
+    synth.cancel();
+    synth.speak(utter);
+  }
+
+  // --- Eyes / animation ---
+  let eyesInterval = null;
+  function moveEyesWhileSpeaking(){
+    clearInterval(eyesInterval);
+    eyesInterval = setInterval(()=>{
+      const dx = (Math.random()*20-10);
+      const dy = (Math.random()*8-4);
+      eyeL.setAttribute('cx', 200 + dx);
+      eyeL.setAttribute('cy', 220 + dy);
+      eyeR.setAttribute('cx', 300 + dx);
+      eyeR.setAttribute('cy', 220 + dy);
+    }, 90);
+  }
+  function resetEyes(){
+    clearInterval(eyesInterval);
+    eyeL.setAttribute('cx', 200);
+    eyeL.setAttribute('cy', 220);
+    eyeR.setAttribute('cx', 300);
+    eyeR.setAttribute('cy', 220);
+  }
+
+  // --- Aguja ---
+  function rotateNeedleTo(angleDeg){
+    pointer.style.transform = `rotate(${angleDeg}deg)`;
+  }
+
+  function randomAngle(min=-160, max=160){
+    return Math.floor(Math.random()*(max-min+1))+min;
+  }
+
+  // --- Eventos UI ---
+  speakBtn.addEventListener('click', ()=>{
+    const phrases = getPhrases();
+    if(phrases.length === 0){ log('No hay frases'); return; }
+    const text = phrases[0];
+    rotateNeedleTo(randomAngle());
+    speak(text);
+  });
+
+  randomBtn.addEventListener('click', ()=>{
+    const phrases = getPhrases();
+    if(phrases.length === 0){ log('No hay frases'); return; }
+    const text = phrases[Math.floor(Math.random()*phrases.length)];
+    rotateNeedleTo(randomAngle());
+    speak(text);
+  });
+
+  animateBtn.addEventListener('click', ()=>{
+    const angle = randomAngle();
+    rotateNeedleTo(angle);
+    log('Aguja giró a ' + angle + '°');
+  });
+
+  document.getElementById('logClear').addEventListener('click', ()=> logEl.innerHTML = '');
+
+  // --- accesibilidad: tecla espacio para hablar frase aleatoria ---
+  window.addEventListener('keydown', (e)=>{
+    if(e.code === 'Space'){ e.preventDefault(); randomBtn.click(); }
+  });
+
+  // --- mejora visual: girar aguja cada vez que TTS empieza ---
+  // añadimos evento global sobre synthesis (no siempre disponible)
+  (function attachSpeakEvents(){
+    const origSpeak = speechSynthesis.speak;
+    // No sobreescribimos en navegadores modernos, en su lugar usamos onstart dentro de utterance.
+  })();
+
+  // --- inicial logs y demo ---
+  log('Astrolabio listo.');
+  // Demo: si quieres, descomenta para que hable una frase al cargar.
+  // setTimeout(()=> randomBtn.click(), 800);
+
+  // --- fallback si voz no carga rápido ---
+  setTimeout(()=> { if(!voiceSelect.children.length) populateVoices(); }, 700);
+
+</script>
+</body>
+</html>

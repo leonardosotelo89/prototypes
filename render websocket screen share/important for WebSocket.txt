@@ -1,0 +1,6 @@
+server.js and package.json 
+must be in the root of the repository 
+not in subfolders
+
+the websocket at render.com must be live and 
+connected with the repository 

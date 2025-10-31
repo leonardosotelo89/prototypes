@@ -1,50 +1,42 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Viewer</title>
-<style>
-body { background:#010; color:lime; font-family:monospace; }
-button { margin:10px; padding:8px 14px; }
-video { width:100%; max-height:80vh; background:black; }
-</style>
+  <meta charset="UTF-8">
+  <title>Viewer</title>
+  <style>
+    body { background: #000; color: #0f0; font-family: monospace; text-align: center; }
+    video { width: 100%; border: 2px solid #0f0; margin-top: 10px; }
+  </style>
 </head>
 <body>
-<h2>Receptor</h2>
-<button id="join">Unirse a la sesión</button>
-<video id="remote" autoplay playsinline controls></video>
-<script>
-const ws = new WebSocket("wss://prototypes-le04.onrender.comm");
-const localId = "viewer-" + Math.random().toString(36).slice(2,9);
-let peer, senderId;
+  <h2>🖥️ Screen Viewer</h2>
+  <video id="remoteVideo" autoplay playsinline></video>
 
-ws.onopen = ()=>ws.send(JSON.stringify({type:"hello", id: localId}));
+  <script>
+    const socket = new WebSocket("wss://prototypes-le04.onrender.com");
+    const video = document.getElementById("remoteVideo");
 
-document.querySelector("#join").onclick = ()=>{
-  peer = new RTCPeerConnection();
-  peer.ontrack = e=>{
-    document.querySelector("#remote").srcObject = e.streams[0];
-  };
-  peer.onicecandidate = e=>{
-    if(e.candidate) send({type:"candidate", to:senderId, from:localId, payload:e.candidate});
-  };
-};
+    const peer = new RTCPeerConnection();
+    peer.ontrack = e => (video.srcObject = e.streams[0]);
 
-ws.onmessage = async ({data})=>{
-  const msg = JSON.parse(data);
-  if(msg.type==="offer" && msg.payload){
-    senderId = msg.from;
-    await peer.setRemoteDescription(msg.payload);
-    const answer = await peer.createAnswer();
-    await peer.setLocalDescription(answer);
-    send({type:"answer", to:senderId, from:localId, payload:answer});
-  }
-  if(msg.type==="candidate" && msg.payload && msg.from===senderId){
-    await peer.addIceCandidate(msg.payload);
-  }
-};
+    socket.onopen = () => console.log("Connected to signaling server");
 
-function send(obj){ ws.send(JSON.stringify(obj)); }
-</script>
+    socket.onmessage = async e => {
+      const data = JSON.parse(e.data);
+
+      if (data.offer) {
+        await peer.setRemoteDescription(new RTCSessionDescription(data.offer));
+        const answer = await peer.createAnswer();
+        await peer.setLocalDescription(answer);
+        socket.send(JSON.stringify({ answer }));
+      } else if (data.candidate) {
+        await peer.addIceCandidate(new RTCIceCandidate(data.candidate));
+      }
+    };
+
+    peer.onicecandidate = e => {
+      if (e.candidate) socket.send(JSON.stringify({ candidate: e.candidate }));
+    };
+  </script>
 </body>
 </html>

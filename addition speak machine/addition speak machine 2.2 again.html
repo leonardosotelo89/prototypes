@@ -43,11 +43,11 @@ h2{
 }
 @keyframes activo{
   from{
-    
+
   }50%{
     border-radius: 0%;
   }to{
-    
+
   }
 }
 
@@ -123,26 +123,26 @@ h2{
 
 canvas{
   position: absolute ;
-  width: calc(100%); 
-  height: 100px ;
+  width:100%; 
+  height: 70px ;
   border: 2px solid transparent ;
 }
     </style>
   </head>
   <body>
    <h2 hidden="true">one digit addition</h2>
-   <div class="logo"></div>
+   <div class="logo" hidden></div>
   <div id="first"><canvas id="drawfirst"></canvas></div>
   <div id="plus"><canvas id="drawplus"></canvas></div>
   <div id="second"><canvas id="drawsecond"></canvas></div>
-  
+
   <div id="one"><canvas id="drawone"></canvas></div>
   <div id="two"><canvas id="drawtwo"></canvas></div>
   <div id="three"><canvas id="drawthree"></canvas></div>
   <div id="four"><canvas id="drawfour"></canvas></div>
   <div id="five"><canvas id="drawfive"></canvas></div>
   <div id="six"><canvas id="drawsix"></canvas></div>
-  
+
 <script>
 const df = document.querySelector('#drawfirst')
 const ctxdf = df.getContext('2d')
@@ -179,6 +179,7 @@ let fivetimes  = 0
 //results should be length 3
 const results = [0,1,2,3,4,5]
 const toshow = []
+const additionboxes = [first,second]
 const optionboxes = [one, two, three, four, five, six]
 
 
@@ -218,43 +219,43 @@ shownumbers()
 function showaddition(){
 ctxdf.fillStyle = 'red'
 ctxdf.font = '100px Arial'
-ctxdf.fillText(n1,(innerWidth/6) ,100) 
-  
+ctxdf.fillText(n1,(innerWidth/3) ,100) 
+
 ctxdp.fillStyle = 'lime'
 ctxdp.font = '100px Arial'
-ctxdp.fillText("+",(innerWidth/6) ,100)
+ctxdp.fillText("+",(innerWidth/3) ,100)
 
 ctxds.fillStyle = 'red'
 ctxds.font = '100px Arial'
-ctxds.fillText(n2,(innerWidth/6) ,100)
+ctxds.fillText(n2,(innerWidth/3) ,100)
 }
 
 
 function showoptions(){
 ctxdone.fillStyle = 'blue'
 ctxdone.font = '100px Arial'
-ctxdone.fillText(toshow[0],(innerWidth/6) ,100) 
-  
+ctxdone.fillText(toshow[0],(innerWidth/4) ,100) 
+
 ctxdtwo.fillStyle = 'blue'
 ctxdtwo.font = '100px Arial'
-ctxdtwo.fillText(toshow[1],(innerWidth/6) ,100)
+ctxdtwo.fillText(toshow[1],(innerWidth/4) ,100)
 
 ctxdthree.fillStyle = 'blue'
 ctxdthree.font = '100px Arial'
-ctxdthree.fillText(toshow[2],(innerWidth/6) ,100)
+ctxdthree.fillText(toshow[2],(innerWidth/4) ,100)
 
 
 ctxdfour.fillStyle = 'blue'
 ctxdfour.font = '100px Arial'
-ctxdfour.fillText(toshow[3],(innerWidth/6) ,100) 
-  
+ctxdfour.fillText(toshow[3],(innerWidth/4) ,100) 
+
 ctxdfive.fillStyle = 'blue'
 ctxdfive.font = '100px Arial'
-ctxdfive.fillText(toshow[4],(innerWidth/6) ,100)
+ctxdfive.fillText(toshow[4],(innerWidth/4) ,100)
 
 ctxdsix.fillStyle = 'blue'
 ctxdsix.font = '100px Arial'
-ctxdsix.fillText(toshow[5],(innerWidth/6) ,100)
+ctxdsix.fillText(toshow[5],(innerWidth/4) ,100)
 }
 
 
@@ -272,18 +273,17 @@ function clear(){
 
 
 function samecolor(){
+
   if(reset){
-  ctxdf.fillStyle = 'red'
-  ctxdf.fillRect(0,0, df.width,df.height)
-  ctxds.fillStyle = 'red'
-  ctxds.fillRect(0,0, ds.width,ds.height)
-  } else{
-  ctxdf.fillStyle = 'transparent'
-  ctxdf.fillRect(0,0, df.width,df.height)
-  ctxds.fillStyle = 'transparent'
-  ctxds.fillRect(0,0, ds.width,ds.height)
+  additionboxes.forEach((item)=>{
+    item.style.backgroundColor = 'red' 
+    })
+  }else {
+  additionboxes.forEach((item)=>{
+    item.style.backgroundColor = 'transparent' 
+    })
   }
-  
+
   if(reset) {
   optionboxes.forEach((item)=>{
     item.style.backgroundColor = 'blue'
@@ -319,11 +319,11 @@ function again(){
 
 function loop(){
   clear()
-  
+
   showaddition()
   showoptions()
   samecolor()
-  
+
   window.requestAnimationFrame(loop)
 }
 loop()
@@ -393,6 +393,7 @@ document.body.addEventListener('click', function(){
 //Math.floor Math.ceil Math.round parseInt
 */
 let logo = document.querySelector('.logo')
+logo.style.display = 'none'
 let colores = setInterval(()=>{
   logo.style.backgroundColor = `rgb(
   ${parseInt(Math.random()*256)} , 

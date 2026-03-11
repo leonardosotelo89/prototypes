@@ -1,0 +1,406 @@
+<html lang="en">
+  <head>
+<meta charset="UTF-8">
+<meta name="viewport" 
+content="width=device-width,
+                  height=device-height, 
+                  initial-scale=1.0">
+    <title>one digit</title>
+    <style>
+*{margin:0px;padding:0px;box-sizing:border-box;}
+    body{background-color: rgb(0,0,0);
+               color: lime;
+} 
+h2{
+  position: absolute ;
+  left: 50%;
+  transform: translate(-50%,0%);
+  user-select: none ;
+  animation:colores 7s 1s linear infinite;
+}
+@keyframes colores{
+  from{
+   filter: hue-rotate(0deg);
+  }to{
+    filter: hue-rotate(360deg);
+  }
+}
+.logo{
+  position: absolute ;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%,-50%);
+  width: 300px;
+  height: 300px;
+  display:grid ;
+  place-items: center ;
+  border-radius: 50%;
+  animation:none 5.5s 0s linear infinite alternate ;
+  transition:background 20s linear;
+  font-size: 50px;
+  color: black;
+  text-shadow: 1px 0px 0px white, 0px 1px 0px white, -1px 0px 0px white, 0px -1px 0px white, 1px 1px 0px white, -1px -1px 0px white, 1px -1px 0px white, -1px 1px 0px white;/*left/top/spread/color*/
+}
+@keyframes activo{
+  from{
+    
+  }50%{
+    border-radius: 0%;
+  }to{
+    
+  }
+}
+
+#first, #plus, #second {
+  width: calc(100% / 3);
+  height: 100px ;
+  position: absolute ;
+  top: 50px ;
+  display: grid ;
+  place-items: center ;
+  color: red ;
+  font-size: 50px;
+  font-weight: 500 ;
+  background-color: black ;
+  border: 2px solid lime ;
+}
+#first{
+  left: 0px;
+}
+#plus{
+  left: 50%;
+  transform: translate(-50%,0%);
+  border:none;
+}
+#second{
+  right: 0px ;
+}
+#one, #two, #three {
+  width: calc(100% / 3);
+  height: 100px ;
+  position: absolute ;
+  bottom: 150px ;
+  display: grid ;
+  place-items: center ;
+  color: blue;
+  font-size: 50px;
+  background-color: black ;
+  border: 2px solid lime ;
+}
+#one{
+  left: 0px;
+}
+#two{
+  left: 50%;
+  transform: translate(-50%,0%);
+}
+#three{
+  right: 0px ;
+}
+
+#four, #five, #six {
+  width: calc(100% / 3);
+  height: 100px ;
+  position: absolute ;
+  bottom: 50px ;
+  display: grid ;
+  place-items: center ;
+  color: blue;
+  font-size: 50px;
+  background-color: black ;
+  border: 2px solid lime ;
+}
+#four{
+  left: 0px;
+}
+#five{
+  left: 50%;
+  transform: translate(-50%,0%);
+}
+#six{
+  right: 0px ;
+}
+
+canvas{
+  position: absolute ;
+  width: calc(100%); 
+  height: 100px ;
+  border: 2px solid transparent ;
+}
+    </style>
+  </head>
+  <body>
+   <h2 hidden="true">one digit addition</h2>
+   <div class="logo"></div>
+  <div id="first"><canvas id="drawfirst"></canvas></div>
+  <div id="plus"><canvas id="drawplus"></canvas></div>
+  <div id="second"><canvas id="drawsecond"></canvas></div>
+  
+  <div id="one"><canvas id="drawone"></canvas></div>
+  <div id="two"><canvas id="drawtwo"></canvas></div>
+  <div id="three"><canvas id="drawthree"></canvas></div>
+  <div id="four"><canvas id="drawfour"></canvas></div>
+  <div id="five"><canvas id="drawfive"></canvas></div>
+  <div id="six"><canvas id="drawsix"></canvas></div>
+  
+<script>
+const df = document.querySelector('#drawfirst')
+const ctxdf = df.getContext('2d')
+const dp = document.querySelector('#drawplus')
+const ctxdp = dp.getContext('2d')
+const ds = document.querySelector('#drawsecond')
+const ctxds = ds.getContext('2d')
+
+const done = document.querySelector('#drawone')
+const ctxdone = done.getContext('2d')
+const dtwo = document.querySelector('#drawtwo')
+const ctxdtwo = dtwo.getContext('2d')
+const dthree = document.querySelector('#drawthree')
+const ctxdthree = dthree.getContext('2d')
+const dfour = document.querySelector('#drawfour')
+const ctxdfour = dfour.getContext('2d')
+const dfive = document.querySelector('#drawfive')
+const ctxdfive = dfive.getContext('2d')
+const dsix = document.querySelector('#drawsix')
+const ctxdsix = dsix.getContext('2d')
+
+
+
+
+let reset = false 
+let transparent = true 
+
+let n1 = null 
+let n2 = null
+
+let value = 0
+let fivetimes  = 0
+
+//results should be length 3
+const results = [0,1,2,3,4,5]
+const toshow = []
+const optionboxes = [one, two, three, four, five, six]
+
+
+function addition(){
+  //truncate arrays
+  results.length = 0
+  toshow.length = 0
+   n1 = Math.floor(1+Math.random()*9)
+   n2 = Math.floor(1+Math.random()*9)
+  value = n1 + n2 
+  results.push(value)
+  for(let i = 0;i < 5;i++){
+  do{
+    fivetimes = Math.floor(1+Math.random()*18)
+    console.log(fivetimes ) 
+  }while (results.includes(fivetimes ))
+  results.push(fivetimes )
+  }
+  console.log(results) 
+}
+addition()
+
+
+function shownumbers(){
+  let chosen
+  for(let i = 0;i < 6;i++){
+  do{
+    const random = Math.floor(Math.random()*results.length) 
+    chosen = results[random]
+  }while (toshow.includes(chosen))
+  toshow.push(chosen)
+  }
+}
+shownumbers()
+
+
+function showaddition(){
+ctxdf.fillStyle = 'red'
+ctxdf.font = '100px Arial'
+ctxdf.fillText(n1,(innerWidth/6) ,100) 
+  
+ctxdp.fillStyle = 'lime'
+ctxdp.font = '100px Arial'
+ctxdp.fillText("+",(innerWidth/6) ,100)
+
+ctxds.fillStyle = 'red'
+ctxds.font = '100px Arial'
+ctxds.fillText(n2,(innerWidth/6) ,100)
+}
+
+
+function showoptions(){
+ctxdone.fillStyle = 'blue'
+ctxdone.font = '100px Arial'
+ctxdone.fillText(toshow[0],(innerWidth/6) ,100) 
+  
+ctxdtwo.fillStyle = 'blue'
+ctxdtwo.font = '100px Arial'
+ctxdtwo.fillText(toshow[1],(innerWidth/6) ,100)
+
+ctxdthree.fillStyle = 'blue'
+ctxdthree.font = '100px Arial'
+ctxdthree.fillText(toshow[2],(innerWidth/6) ,100)
+
+
+ctxdfour.fillStyle = 'blue'
+ctxdfour.font = '100px Arial'
+ctxdfour.fillText(toshow[3],(innerWidth/6) ,100) 
+  
+ctxdfive.fillStyle = 'blue'
+ctxdfive.font = '100px Arial'
+ctxdfive.fillText(toshow[4],(innerWidth/6) ,100)
+
+ctxdsix.fillStyle = 'blue'
+ctxdsix.font = '100px Arial'
+ctxdsix.fillText(toshow[5],(innerWidth/6) ,100)
+}
+
+
+function clear(){
+  ctxdf.clearRect(0,0, df.width,df.height)
+  ctxdp.clearRect(0,0, dp.width,dp.height)
+  ctxds.clearRect(0,0, ds.width,ds.height)
+  ctxdone.clearRect(0,0, done.width,done.height)
+  ctxdtwo.clearRect(0,0, dtwo.width,dtwo.height)
+  ctxdthree.clearRect(0,0, dthree.width,dthree.height)
+  ctxdfour.clearRect(0,0, dfour.width,dfour.height)
+  ctxdfive.clearRect(0,0, dfive.width,dfive.height)
+  ctxdsix.clearRect(0,0, dsix.width,dsix.height)
+}
+
+
+function samecolor(){
+  if(reset){
+  ctxdf.fillStyle = 'red'
+  ctxdf.fillRect(0,0, df.width,df.height)
+  ctxds.fillStyle = 'red'
+  ctxds.fillRect(0,0, ds.width,ds.height)
+  } else{
+  ctxdf.fillStyle = 'transparent'
+  ctxdf.fillRect(0,0, df.width,df.height)
+  ctxds.fillStyle = 'transparent'
+  ctxds.fillRect(0,0, ds.width,ds.height)
+  }
+  
+  if(reset) {
+  optionboxes.forEach((item)=>{
+    item.style.backgroundColor = 'blue'
+  })
+  transparent = true 
+  setTimeout(()=>{ reset = false }, 500)
+  } 
+  if(!reset && transparent){
+  optionboxes.forEach((item)=>{
+    item.style.backgroundColor = 'transparent'
+  })
+  transparent = false
+  } 
+}
+
+function again(){
+  setTimeout(()=>{reset = true}, 1000)
+  setTimeout(()=>{
+    addition()
+      shownumbers()
+      optionboxes.forEach((item)=>{
+    item.style.backgroundColor = 'transparent'
+  })
+  }, 1500)
+}
+
+
+
+
+
+
+
+
+function loop(){
+  clear()
+  
+  showaddition()
+  showoptions()
+  samecolor()
+  
+  window.requestAnimationFrame(loop)
+}
+loop()
+
+
+
+
+
+
+one.addEventListener('click',function(){
+  if(toshow[0] == value) {
+    this.style.backgroundColor = 'lime'
+    again()
+  } else {
+    this.style.backgroundColor = 'red'
+  }
+})
+two.addEventListener('click',function(){
+  if(toshow[1] == value) {
+    this.style.backgroundColor = 'lime'
+    again()    
+  } else {
+    this.style.backgroundColor = 'red'
+  }
+})
+three.addEventListener('click',function(){
+  if(toshow[2] == value) {
+    this.style.backgroundColor = 'lime'
+    again()    
+  } else {
+    this.style.backgroundColor = 'red'
+  }
+})
+four.addEventListener('click',function(){
+  if(toshow[3] == value) {
+    this.style.backgroundColor = 'lime'
+    again()    
+  } else {
+    this.style.backgroundColor = 'red'
+  }
+})
+five.addEventListener('click',function(){
+  if(toshow[4] == value) {
+    this.style.backgroundColor = 'lime'
+    again()    
+  } else {
+    this.style.backgroundColor = 'red'
+  }
+})
+six.addEventListener('click',function(){
+  if(toshow[5] == value) {
+    this.style.backgroundColor = 'lime'
+    again()    
+  } else {
+    this.style.backgroundColor = 'red'
+  }
+})
+
+
+/*
+document.body.addEventListener('click', function(){
+  document.body.style.backgroundColor = `rgb(
+  ${Math.floor(Math.random()*256)} , 
+  ${Math.ceil(Math.random()*256)} ,
+  ${Math.round(Math.random()*256)} ) `
+})
+//Math.floor Math.ceil Math.round parseInt
+*/
+let logo = document.querySelector('.logo')
+let colores = setInterval(()=>{
+  logo.style.backgroundColor = `rgb(
+  ${parseInt(Math.random()*256)} , 
+  ${parseInt(Math.random()*256)} ,
+  ${parseInt(Math.random()*256)} ) `
+}, 20000 )
+</script>
+
+<footer>            <!--              --></footer>
+</body>
+</html> 

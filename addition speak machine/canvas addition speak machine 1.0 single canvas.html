@@ -1,0 +1,399 @@
+<html lang="en">
+  <head>
+<meta charset="UTF-8">
+<meta name="viewport" 
+content="width=device-width,
+                  height=device-height, 
+                  initial-scale=1.0">
+    <title>one digit</title>
+    <style>
+*{margin:0px;padding:0px;box-sizing:border-box;}
+    body{background-color: rgb(0,0,0);
+               color: lime;
+} 
+h2{
+  position: absolute ;
+  left: 50%;
+  transform: translate(-50%,0%);
+  user-select: none ;
+  animation:colores 7s 1s linear infinite;
+}
+@keyframes colores{
+  from{
+   filter: hue-rotate(0deg);
+  }to{
+    filter: hue-rotate(360deg);
+  }
+}
+.logo{
+  position: absolute ;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%,-50%);
+  width: 30px;
+  height: 30px;
+  display:grid ;
+  place-items: center ;
+  border-radius: 50%;
+  animation:none 5.5s 0s linear infinite alternate ;
+  transition:background 20s linear;
+  font-size: 50px;
+  color: black;
+  text-shadow: 1px 0px 0px white, 0px 1px 0px white, -1px 0px 0px white, 0px -1px 0px white, 1px 1px 0px white, -1px -1px 0px white, 1px -1px 0px white, -1px 1px 0px white;/*left/top/spread/color*/
+}
+@keyframes activo{
+  from{
+    
+  }50%{
+    border-radius: 0%;
+  }to{
+    
+  }
+}
+#xxx{
+  position: absolute ;
+  left: 0px ;
+  top: 0px ;
+  width: 100%;
+  height: 100%;
+  border: 2px solid transparent ;
+}
+
+#first, #plus, #second {
+  width: calc(100% / 3);
+  height: 100px ;
+  position: absolute ;
+  top: 50px ;
+  display: grid ;
+  place-items: center ;
+  color: red ;
+  font-size: 50px;
+  font-weight: 500 ;
+  background-color: transparent ;
+  border: 2px solid lime ;
+}
+#first{
+  left: 0px;
+}
+#plus{
+  left: 50%;
+  transform: translate(-50%,0%);
+  border:none;
+}
+#second{
+  right: 0px ;
+}
+#one, #two, #three {
+  width: calc(100% / 3);
+  height: 100px ;
+  position: absolute ;
+  bottom: 150px ;
+  display: grid ;
+  place-items: center ;
+  color: blue;
+  font-size: 50px;
+  background-color: transparent ;
+  border: 2px solid lime ;
+}
+#one{
+  left: 0px;
+}
+#two{
+  left: 50%;
+  transform: translate(-50%,0%);
+}
+#three{
+  right: 0px ;
+}
+
+#four, #five, #six {
+  width: calc(100% / 3);
+  height: 100px ;
+  position: absolute ;
+  bottom: 50px ;
+  display: grid ;
+  place-items: center ;
+  color: blue;
+  font-size: 50px;
+  background-color: transparent ;
+  border: 2px solid lime ;
+}
+#four{
+  left: 0px;
+}
+#five{
+  left: 50%;
+  transform: translate(-50%,0%);
+}
+#six{
+  right: 0px ;
+}
+
+canvas{
+  position: absolute ;
+  width: calc(100%); 
+  height: 100px ;
+  border: 2px solid transparent ;
+}
+    </style>
+  </head>
+  <body>
+   <h2 hidden="true">one digit addition</h2>
+   <div class="logo"></div>
+   
+   <canvas id="xxx"></canvas>
+   
+  <div id="first"></div>
+  <div id="plus"></div>
+  <div id="second"></div>
+  
+  <div id="one"></div>
+  <div id="two"></div>
+  <div id="three"></div>
+  <div id="four"></div>
+  <div id="five"></div>
+  <div id="six"></div>
+  
+<script>
+const xxx = document.querySelector('#xxx')
+const ctx = xxx.getContext('2d')
+xxx.width = window.innerWidth 
+xxx.height = window.innerHeight 
+
+
+let reset = false 
+let transparent = true 
+
+let n1 = null 
+let n2 = null
+
+let value = 0
+let fivetimes  = 0
+
+//results should be length 3
+const results = [0,1,2,3,4,5]
+const toshow = []
+const additionboxes = [first, second]
+const optionboxes = [one, two, three, four, five, six]
+
+
+function addition(){
+  //truncate arrays
+  results.length = 0
+  toshow.length = 0
+   n1 = Math.floor(1+Math.random()*9)
+   n2 = Math.floor(1+Math.random()*9)
+  value = n1 + n2 
+  results.push(value)
+  for(let i = 0;i < 5;i++){
+  do{
+    fivetimes = Math.floor(1+Math.random()*18)
+    console.log(fivetimes ) 
+  }while (results.includes(fivetimes ))
+  results.push(fivetimes )
+  }
+  console.log(results) 
+}
+addition()
+
+
+function shownumbers(){
+  let chosen
+  for(let i = 0;i < 6;i++){
+  do{
+    const random = Math.floor(Math.random()*results.length) 
+    chosen = results[random]
+  }while (toshow.includes(chosen))
+  toshow.push(chosen)
+  }
+}
+shownumbers()
+
+
+function showaddition(){
+ctx.fillStyle = 'red'
+ctx.font = '100px Arial'
+ctx.fillText(n1,(xxx.width/8) ,xxx.height /6.5) 
+  
+ctx.fillStyle = 'lime'
+ctx.font = '100px Arial'
+ctx.fillText("+",(xxx.width/2.2) ,xxx.height/6.5)
+
+ctx.fillStyle = 'red'
+ctx.font = '100px Arial'
+ctx.fillText(n2,(innerWidth/1.25) ,xxx.height /6.5)
+}
+
+
+function showoptions(){
+ctx.fillStyle = 'blue'
+ctx.font = '100px Arial'
+ctx.fillText(toshow[0],(xxx.width/11) ,xxx.height/1.24) 
+  
+ctx.fillStyle = 'blue'
+ctx.font = '100px Arial'
+ctx.fillText(toshow[1],(xxx.width/2.4 ) ,xxx.height/1.24)
+
+ctx.fillStyle = 'blue'
+ctx.font = '100px Arial'
+ctx.fillText(toshow[2],(xxx.width/1.35) ,xxx.height/1.24)
+
+
+ctx.fillStyle = 'blue'
+ctx.font = '100px Arial'
+ctx.fillText(toshow[3],(xxx.width /11) ,xxx.height/1.08) 
+  
+ctx.fillStyle = 'blue'
+ctx.font = '100px Arial'
+ctx.fillText(toshow[4],(xxx.width /2.4) ,xxx.height/1.08)
+
+ctx.fillStyle = 'blue'
+ctx.font = '100px Arial'
+ctx.fillText(toshow[5],(xxx.width /1.35) ,xxx.height/1.08)
+}
+
+
+function clear(){
+  ctx.clearRect(0,0, xxx.width,xxx.height)
+  ctx.clearRect(0,0, xxx.width,xxx.height)
+  ctx.clearRect(0,0, xxx.width,xxx.height)
+  ctx.clearRect(0,0, xxx.width,xxx.height)
+  ctx.clearRect(0,0, xxx.width,xxx.height)
+  ctx.clearRect(0,0, xxx.width,xxx.height)
+  ctx.clearRect(0,0, xxx.width,xxx.height)
+  ctx.clearRect(0,0, xxx.width,xxx.height)
+  ctx.clearRect(0,0, xxx.width,xxx.height)
+}
+
+
+function samecolor(){
+    if(reset){ 
+   additionboxes.forEach((item)=>{ 
+     item.style.backgroundColor = 'red'  
+     }) 
+   }else { 
+   additionboxes.forEach((item)=>{ 
+     item.style.backgroundColor = 'transparent'  
+     }) 
+   }
+  
+  if(reset) {
+  optionboxes.forEach((item)=>{
+    item.style.backgroundColor = 'blue'
+  })
+  transparent = true 
+  setTimeout(()=>{ reset = false }, 500)
+  } 
+  if(!reset && transparent){
+  optionboxes.forEach((item)=>{
+    item.style.backgroundColor = 'transparent'
+  })
+  transparent = false
+  } 
+}
+
+function again(){
+  setTimeout(()=>{reset = true}, 1000)
+  setTimeout(()=>{
+    addition()
+      shownumbers()
+      optionboxes.forEach((item)=>{
+    item.style.backgroundColor = 'transparent'
+  })
+  }, 1500)
+}
+
+
+
+
+
+
+
+
+function loop(){
+  clear()
+  
+  showaddition()
+  showoptions()
+  samecolor()
+  
+  window.requestAnimationFrame(loop)
+}
+loop()
+
+
+
+
+
+
+one.addEventListener('click',function(){
+  if(toshow[0] == value) {
+    this.style.backgroundColor = 'lime'
+    again()
+  } else {
+    this.style.backgroundColor = 'red'
+  }
+})
+two.addEventListener('click',function(){
+  if(toshow[1] == value) {
+    this.style.backgroundColor = 'lime'
+    again()    
+  } else {
+    this.style.backgroundColor = 'red'
+  }
+})
+three.addEventListener('click',function(){
+  if(toshow[2] == value) {
+    this.style.backgroundColor = 'lime'
+    again()    
+  } else {
+    this.style.backgroundColor = 'red'
+  }
+})
+four.addEventListener('click',function(){
+  if(toshow[3] == value) {
+    this.style.backgroundColor = 'lime'
+    again()    
+  } else {
+    this.style.backgroundColor = 'red'
+  }
+})
+five.addEventListener('click',function(){
+  if(toshow[4] == value) {
+    this.style.backgroundColor = 'lime'
+    again()    
+  } else {
+    this.style.backgroundColor = 'red'
+  }
+})
+six.addEventListener('click',function(){
+  if(toshow[5] == value) {
+    this.style.backgroundColor = 'lime'
+    again()    
+  } else {
+    this.style.backgroundColor = 'red'
+  }
+})
+
+
+/*
+document.body.addEventListener('click', function(){
+  document.body.style.backgroundColor = `rgb(
+  ${Math.floor(Math.random()*256)} , 
+  ${Math.ceil(Math.random()*256)} ,
+  ${Math.round(Math.random()*256)} ) `
+})
+//Math.floor Math.ceil Math.round parseInt
+*/
+let logo = document.querySelector('.logo')
+let colores = setInterval(()=>{
+  logo.style.backgroundColor = `rgb(
+  ${parseInt(Math.random()*256)} , 
+  ${parseInt(Math.random()*256)} ,
+  ${parseInt(Math.random()*256)} ) `
+}, 20000 )
+</script>
+
+<footer>            <!--              --></footer>
+</body>
+</html> 

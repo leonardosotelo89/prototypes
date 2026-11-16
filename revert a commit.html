@@ -1,0 +1,91 @@
+<html>
+  <head>
+
+<meta name="viewport" 
+      content="width=device-width,
+               height=device-height
+               initial-scale=1.0">
+
+    <title>empty</title>
+
+  <style>
+    body{
+     background-color: rgb(0,50,50);
+     color: lime;
+    }
+  textarea{
+    color:#fff;
+    background-color: rgb(0,25,50);
+    font-size: 18px;
+  }   
+  </style>
+  
+  <body>
+      <h1> revert a commit</h1>
+      <br>
+      <div id="div1"></div>
+      <div id="div2"></div>
+      <div id="div3"></div>
+      
+      <textarea>
+    Si usas GitHub Pages, ya estás usando Git: GitHub es Git alojado en la web. Lo más probable es que subieras los archivos desde el navegador y nunca viste el historial, pero lo tienes completo.
+
+Para volver a una versión anterior de un archivo desde el navegador:
+1. Abre el archivo en el repositorio y pulsa **History** (arriba a la derecha).
+2. Elige el commit al que quieres volver.
+3. Pulsa los tres puntos (**...**) y luego **View file**.
+4. Copia ese contenido, edita el archivo actual, pégalo y haz commit.
+
+Si quieres un botón de revertir de verdad, trabaja en una rama y súbela con un Pull Request. Cuando lo fusionas, GitHub muestra un botón **Revert** que deshace todo el cambio con un solo clic. Es más trámite, pero para cambios grandes en la radio te daría esa red de seguridad.
+
+Un atajo si todo esto te parece mucho: antes de un cambio grande, haz un commit con un mensaje claro, como "radio funcionando con URLs absolutas". Ese commit queda como punto de retorno, y siempre puedes volver a él desde History. 
+
+
+        
+
+la página del commit muestra el **diff** (solo lo que cambió). Para ver el archivo completo tal como estaba en ese momento:
+
+1. En la lista del historial, pulsa el icono **`<>`** a la derecha del commit ("Browse repository at this point"). Verás el repositorio entero en esa versión y puedes abrir el archivo.
+2. O, dentro del commit, pulsa los **tres puntos (...)** en la cabecera del archivo y elige **View file**.
+
+Una vez abierto el archivo de esa versión, pulsa **Raw** para ver solo el texto y copiarlo con facilidad. Luego editas tu archivo actual, pegas y haces commit.
+
+Si en la tablet no encuentras los tres puntos, prueba el icono `<>`, que suele ser más fácil de ver.
+
+
+
+la app de GitHub es más limitada que la web y, en el historial de un archivo, solo muestra el diff.
+
+Para ver el archivo completo, abre **github.com** en el navegador de la tablet. Si te muestra la versión móvil, activa **Sitio de escritorio** en el menú del navegador. Con la versión web puedes usar el icono `<>` o **View file**.
+
+
+
+Los dos botones están en la pestaña Conversation del Pull Request, en el recuadro morado de "Merged" o en el mensaje de "Pull request successfully merged and closed":
+Delete branch: aparece a la derecha de ese mensaje verde, justo en el aviso de "You're all set".
+Revert: aparece en el mismo recuadro, más abajo, cerca del mensaje de que el PR fue fusionado.
+Si no los ves, ocurre lo mismo que con el historial: la app de GitHub no los muestra. Abre el Pull Request en github.com desde el navegador, con Sitio de escritorio activado.
+
+
+
+ Revert está arriba a la derecha, junto a "merged commit 64dcfba into main", y Delete branch está dentro del recuadro morado.
+Delete branch: puedes pulsarlo sin problema. Solo borra la rama revert, y los cambios ya están en main.
+Revert: no lo pulses a menos que quieras deshacer lo que acabas de fusionar. Crearía otro Pull Request que quita ese cambio de main.
+      </textarea>
+<img src="">
+  <script>
+  document.write('js ready')
+  console.log('hello from console')
+  const textarea = document.querySelector('textarea')
+  textarea.style.width = '100%'
+  textarea.style.height = 'auto' 
+  textarea.style.height = textarea.scrollHeight
+    
+    
+    
+    
+    
+    
+    
+   </script>
+   </body>
+</html>

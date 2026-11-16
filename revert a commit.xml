@@ -1,32 +1,4 @@
-<html>
-  <head>
-
-<meta name="viewport" 
-      content="width=device-width,
-               height=device-height
-               initial-scale=1.0">
-
-    <title>empty</title>
-
-  <style>
-    body{
-     background-color: rgb(0,50,50);
-     color: lime;
-    }
-  textarea{
-    color:#fff;
-    background-color: rgb(0,25,50);
-    font-size: 18px;
-  }   
-  </style>
-  
-  <body>
-      <h1> revert a commit</h1>
-      <br>
-      <div id="div1"></div>
-      <div id="div2"></div>
-      <div id="div3"></div>
-      
+    
       <textarea>
     Si usas GitHub Pages, ya estás usando Git: GitHub es Git alojado en la web. Lo más probable es que subieras los archivos desde el navegador y nunca viste el historial, pero lo tienes completo.
 
@@ -71,21 +43,15 @@ Si no los ves, ocurre lo mismo que con el historial: la app de GitHub no los mue
 Delete branch: puedes pulsarlo sin problema. Solo borra la rama revert, y los cambios ya están en main.
 Revert: no lo pulses a menos que quieras deshacer lo que acabas de fusionar. Crearía otro Pull Request que quita ese cambio de main.
       </textarea>
-<img src="">
+
+
+
+
   <script>
-  document.write('js ready')
-  console.log('hello from console')
   const textarea = document.querySelector('textarea')
   textarea.style.width = '100%'
   textarea.style.height = 'auto' 
-  textarea.style.height = textarea.scrollHeight
-    
-    
-    
-    
-    
-    
+  textarea.style.height = textarea.scrollHeigh + "px"
     
    </script>
-   </body>
-</html>
+   

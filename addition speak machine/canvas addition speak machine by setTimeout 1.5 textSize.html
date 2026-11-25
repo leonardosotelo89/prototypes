@@ -137,6 +137,7 @@
   
  let reset = false  
  let locked = false 
+ const textSize = (innerWidth * 16) / 100
   
  let n1 = null  
  let n2 = null 
@@ -193,7 +194,7 @@
 
   const iw = innerWidth
 
-  ctx.font = '100px Arial'
+  ctx.font = textSize + 'px Arial'
   ctx.textAlign = 'center'
 
   ctx.fillStyle = additioncolor
@@ -222,7 +223,7 @@
   ]
 
   ctx.fillStyle = optioncolor
-  ctx.font = '100px Arial'
+  ctx.font = textSize + 'px Arial'
   ctx.textAlign = 'center'
 
   toshow.forEach((number,i)=>{

@@ -196,6 +196,7 @@
 
   ctx.font = textSize + 'px Arial'
   ctx.textAlign = 'center'
+  ctx.textBaseline = 'middle'
 
   ctx.fillStyle = additioncolor
   ctx.fillText(n1,(iw/100)*16.65,135)
@@ -225,6 +226,7 @@
   ctx.fillStyle = optioncolor
   ctx.font = textSize + 'px Arial'
   ctx.textAlign = 'center'
+  ctx.textBaseline = 'middle'
 
   toshow.forEach((number,i)=>{
     ctx.fillText(number,

@@ -115,7 +115,7 @@
     <h2 hidden="true">one digit addition</h2> 
  
   
-    <canvas id="xxx"></canvas> 
+    <canvas id="xxx" width="360" height="670"></canvas> 
   
    <div id="first"></div> 
    <div id="plus"></div> 
@@ -131,13 +131,18 @@
  <script> 
  const xxx = document.querySelector('#xxx') 
  const ctx = xxx.getContext('2d') 
+ 
+ //dynamic 
  xxx.width = window.innerWidth  
  xxx.height = window.innerHeight  
   
+  //cellphone zte2026
+  /*xxx.width = 360
+  xxx.height = 670*/
   
  let reset = false  
  let locked = false 
- const textSize = (innerWidth * 20) / 100
+ const textSize = innerWidth * 18 / 100
   
  let n1 = null  
  let n2 = null 
@@ -189,23 +194,26 @@
    } 
  } 
  options() 
+ 
+ console.log(100/3,100/6,100/6*5); 
   
   function showaddition(){
 
   const iw = innerWidth
-
+  
+  ctx.beginPath()
   ctx.font = textSize + 'px Arial'
   ctx.textAlign = 'center'
   ctx.textBaseline = 'middle'
 
   ctx.fillStyle = additioncolor
-  ctx.fillText(n1,(iw/100)*16.65,135)
+  ctx.fillText(n1,(iw/100)*16.6,105)
 
   ctx.fillStyle = bordercolor
-  ctx.fillText("+",(iw/100)*50,135)
+  ctx.fillText("+",(iw/100)*50,105)
 
   ctx.fillStyle = additioncolor
-  ctx.fillText(n2,(iw/100)*83.25,135)
+  ctx.fillText(n2,(iw/100)*83.3,105)
 }
  
  
@@ -214,15 +222,16 @@
   
   //less loc (lines of code)
  function showoptions(){
+   
   const positions = [
-    [16.65, xxx.height - 160],
-    [49.65, xxx.height - 160],
-    [83.25, xxx.height - 160],
-    [16.65, xxx.height - 60],
-    [49.65, xxx.height - 60],
-    [83.25, xxx.height - 60]
+    [16.6, xxx.height - 190],
+    [50, xxx.height - 190],
+    [83.3, xxx.height - 190],
+    [16.6, innerHeight - 90],
+    [50, xxx.height - 90],
+    [83.3, xxx.height - 90]
   ]
-
+  ctx.beginPath()
   ctx.fillStyle = optioncolor
   ctx.font = textSize + 'px Arial'
   ctx.textAlign = 'center'
